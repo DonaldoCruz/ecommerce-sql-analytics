@@ -30,7 +30,7 @@ select
 	month,
 	total_revenue,
 	last_month_revenue,
-	round((total_revenue - last_month_revenue) / last_month_revenue * 100, 2) as percent_change,
-	round((total_revenue - last_month_revenue) / last_month_revenue * 100, 2) < -50 as drop_flag
+	round((total_revenue - last_month_revenue) / nullif(last_month_revenue, 0) * 100, 2) as percent_change,
+	round((total_revenue - last_month_revenue) / nullif(last_month_revenue, 0) * 100, 2) < -50 as drop_flag
 from month_over_month
 order by seller_id, month asc;
