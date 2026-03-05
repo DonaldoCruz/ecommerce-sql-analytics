@@ -13,7 +13,7 @@ with ranked_sellers as (
         ) as ranked
     from iceberg.bronze.order_items oi
     left join iceberg.bronze.sellers s on s.seller_id = oi.seller_id
-    group by oi.seller_id, s.seller_state
+    group by oi.seller_id, s.seller_state -- Could this cause inconsitencies since we are getting seller data from two different tables?
 )
 select * from ranked_sellers
 where ranked <= 3
