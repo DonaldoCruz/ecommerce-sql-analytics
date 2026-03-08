@@ -1,19 +1,20 @@
--- Might be more readable with CTEs.
-with monthly_total as (
-	select 
-		date_trunc('month', o.order_purchase_timestamp) as purchase_month,
-		SUM(oi.price) as monthly_total
-	from iceberg.bronze.order_items oi
-	left join iceberg.bronze.orders o on o.order_id = oi.order_id 
-	where
+-- Might be more readable WITH CTEs.
+WITH monthly_total AS (
+	SELECT 
+		date_trunc('month', o.order_purchase_timestamp) AS purchase_month,
+		SUM(oi.price) AS monthly_total
+	FROM iceberg.bronze.order_items oi
+	LEFT JOIN iceberg.bronze.orders o on o.order_id = oi.order_id 
+	WHERE
 		o.order_status = LOWER('delivered')
-		and DATE(o.order_purchase_timestamp) between DATE('2017-01-01') and DATE('2017-12-31')
-	group by date_trunc('month', o.order_purchase_timestamp)
-	order by purchase_month
+		AND DATE(o.order_purchase_timestamp) between DATE('2017-01-01') 
+        AND DATE('2017-12-31')
+	GROUP BY date_trunc('month', o.order_purchase_timestamp)
+	ORDER BY purchase_month
 )
-select 
+SELECT 
 	purchase_month,
 	monthly_total,
-	SUM(monthly_total) over (order by purchase_month) as running_total
-from monthly_total;
+	SUM(monthly_total) OVER (ORDER BY purchase_month) AS running_total
+FROM monthly_total;
 
